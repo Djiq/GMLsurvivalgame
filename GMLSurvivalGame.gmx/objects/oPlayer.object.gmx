@@ -42,8 +42,10 @@ maximum_velocity = 1.5;
 
 
 //Initalize Inventory
-for(var i = 0; i &lt; 4; i++){
-    for(var k = 0; k &lt; 4; k++){
+max_inventory = 8;
+selected_slot = 0;
+for(var i = 0; i &lt; max_inventory; i++){
+    for(var k = 0; k &lt; 2; k++){
         inventory_array[i,k] = 0;
     }
 }
@@ -77,7 +79,7 @@ var vertical_control =  DOWN - UP ;
 
 if(current_stamina &lt; 15){
  SHIFT = 1; // under 15 sat you can only sneak
- CTRL = 0; // running is imposible
+  // running is imposible
 }
 
 
@@ -153,17 +155,89 @@ y += vspd;
 //setup the camera
 view_yview = y - view_hview/2;
 view_xview = x - view_wview/2;
+//Inventory
+itemUnderPlayer = instance_place(x,y,oBaseItem);
+if(itemUnderPlayer != noone){
+    for(var i = 0; i &lt; max_inventory;i++){
+        if(inventory_array[i,0] = itemUnderPlayer.item_id){
+            inventory_array[i,1]++
+            with(itemUnderPlayer){instance_destroy();
+            }
+            break;
+        }
+        if(inventory_array[i,0] = 0){
+            inventory_array[i,0] = itemUnderPlayer.item_id;
+            inventory_array[i,1]++;
+            with(itemUnderPlayer){instance_destroy();
+            }
+            break;
+        }
+    }
+}
+if(MOUSEDOWN){
+    if(selected_slot = max_inventory-1){
+        selected_slot = 0;
+    }else{
+        selected_slot++
+    }
+}
+if(MOUSEUP){
+    if(selected_slot = 0){
+        selected_slot = max_inventory-1;
+    }else{
+        selected_slot--
+    }
+}
+
 //DEBUG CODE
 //this should be always last
 
 if(DEBUG){
     if(keyboard_check(ord("H")))current_hydration--;
     if(keyboard_check(ord("J")))current_hydration++;
+    if(keyboard_check_pressed(ord("M"))){
+        rItem = instance_create(mouse_x,mouse_y,oBaseItem);
+        rItem.item_id = 1;
+        rItem.sprite_index = scrItemIdtoSprite(rItem.item_id);
+    }
 }
 
 //
 //DEBUG CODE
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Item use code
+//this code will be quite bulky whatever
+if(RMOUSE){
+    switch(inventory_array[selected_slot,0]){
+        case 1:
+        current_hydration += 50;
+        inventory_array[selected_slot,1]--;
+        if(inventory_array[selected_slot,1] == 0)inventory_array[selected_slot,0] = 0;
+        break;
+        default:
+        break;
+    }
+}
 </string>
           </argument>
         </arguments>
@@ -195,6 +269,28 @@ var sa = (current_saturation/maximum_saturation)*100
 draw_healthbar(64,16,80,128,sa,c_black,c_maroon,c_maroon,3,false,false)
 var hy = (current_hydration/maximum_hydration)*100
 draw_healthbar(88,16,104,128,hy,c_black,c_blue,c_blue,3,false,false)
+
+for(var i = 0; i &lt; max_inventory;i++){
+    draw_set_color(c_black);
+    if(selected_slot == i){
+    draw_rectangle_color(16,160+(i*32),48,192+(i*32),c_white,c_white,c_white,c_white,1);
+    }else{
+    draw_rectangle(16,160+(i*32),48,192+(i*32),1);
+    }
+    if(inventory_array[i,0] != 0){
+        draw_set_color(c_white);
+        var xscaling = 32/sprite_get_width(scrItemIdtoSprite(inventory_array[i,0]));
+        var yscaling = 32/sprite_get_height(scrItemIdtoSprite(inventory_array[i,0]));
+        draw_sprite_ext(scrItemIdtoSprite(inventory_array[i,0]),-1,16,160+(i*32),xscaling,yscaling,0,c_white,1);
+        draw_text(32,176+(i*32),inventory_array[i,1]);
+    }
+}
+draw_set_color(c_black);
+
+
+
+
+
 //DEBUG CODE
 //
 if(DEBUG){

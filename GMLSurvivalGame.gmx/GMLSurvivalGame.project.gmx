@@ -8,11 +8,13 @@
   <sprites name="sprites">
     <sprite>sprites\sWall</sprite>
     <sprite>sprites\sPlayer</sprite>
+    <sprite>sprites\sWaterBottle</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
   <scripts name="scripts">
     <script>scripts\scrControls.gml</script>
+    <script>scripts\scrItemIdtoSprite.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\oGame</object>
