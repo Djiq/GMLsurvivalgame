@@ -198,7 +198,7 @@ if(DEBUG){
     if(keyboard_check(ord("J")))current_hydration++;
     if(keyboard_check_pressed(ord("M"))){
         rItem = instance_create(mouse_x,mouse_y,oBaseItem);
-        rItem.image_index = 0;
+        rItem.image_index = choose(0,1,2,3);
     }
 }
 
