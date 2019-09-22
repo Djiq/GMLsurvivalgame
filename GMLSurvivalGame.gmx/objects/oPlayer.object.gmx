@@ -119,6 +119,10 @@ if(current_stamina &lt; maximum_stamina){
     }
     
 }
+current_saturation -= 0.001 + (200 - (current_stamina + current_hydration))/8000;
+current_health += 0.015 - (0.001 + (100 - current_saturation)/8000) - (0.001 + (100 - current_hydration)/8000);
+
+
 //clamp the variables
 //clamp(current_stamina,0,max_hydr_stam);
 if(current_stamina &gt; max_hydr_stam)current_stamina = max_hydr_stam;
@@ -196,6 +200,9 @@ if(MOUSEUP){
 if(DEBUG){
     if(keyboard_check(ord("H")))current_hydration--;
     if(keyboard_check(ord("J")))current_hydration++;
+    if(keyboard_check(ord("K")))current_health--;
+    if(keyboard_check(ord("L")))current_health++;
+    //Spawnas random item
     if(keyboard_check_pressed(ord("M"))){
         rItem = instance_create(mouse_x,mouse_y,oBaseItem);
         rItem.image_index = choose(0,1,2,3);
@@ -230,7 +237,12 @@ if(DEBUG){
 if(RPMOUSE){
     switch(inventory_array[selected_slot,0]){
         case 0:
-        current_hydration += 50;
+        current_hydration += 25;
+        inventory_array[selected_slot,1]--;
+        if(inventory_array[selected_slot,1] == 0)inventory_array[selected_slot,0] = -1;
+        break;
+        case 1:
+        current_saturation += 25;
         inventory_array[selected_slot,1]--;
         if(inventory_array[selected_slot,1] == 0)inventory_array[selected_slot,0] = -1;
         break;
@@ -271,11 +283,11 @@ var hy = (current_hydration/maximum_hydration)*100
 draw_healthbar(88,16,104,128,hy,c_black,c_blue,c_blue,3,false,false)
 
 for(var i = 0; i &lt; max_inventory;i++){
-    draw_set_color(c_black);
+    draw_set_color(c_dkgray);
     if(selected_slot == i){
-    draw_rectangle_color(16,160+(i*32),48,192+(i*32),c_white,c_white,c_white,c_white,1);
+    draw_rectangle_color(16,160+(i*32),48,192+(i*32),c_gray,c_gray,c_gray,c_gray,0);
     }else{
-    draw_rectangle(16,160+(i*32),48,192+(i*32),1);
+    draw_rectangle(16,160+(i*32),48,192+(i*32),0);
     }
     if(inventory_array[i,0] != -1){
         draw_set_color(c_white);
