@@ -11,6 +11,7 @@ SHIFT = keyboard_check(vk_shift);
 CTRL = keyboard_check(vk_control);
 MOUSEUP = mouse_wheel_up();
 MOUSEDOWN = mouse_wheel_down();
+INVENTORY = keyboard_check_pressed(ord("E"));
 
 
 

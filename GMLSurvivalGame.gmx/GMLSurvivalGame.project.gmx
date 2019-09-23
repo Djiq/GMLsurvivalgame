@@ -10,6 +10,7 @@
     <sprite>sprites\sPlayer</sprite>
     <sprite>sprites\sWaterBottle</sprite>
     <sprite>sprites\sItems</sprite>
+    <sprite>sprites\sAttackBox</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -23,6 +24,7 @@
     <object>objects\oBaseItem</object>
     <object>objects\oPlayer</object>
     <object>objects\oWall</object>
+    <object>objects\oAttackBox</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\rmGame</room>

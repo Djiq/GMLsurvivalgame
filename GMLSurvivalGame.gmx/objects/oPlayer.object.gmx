@@ -42,13 +42,29 @@ maximum_velocity = 1.5;
 
 
 //Initalize Inventory
+has_in_hand[0] = -1;
+has_in_hand[1] = 0;
+has_in_hand[2] = 0;
+inventory_opened = false;
 max_inventory = 8;
+max_secondary_inventory = 24;
 selected_slot = 0;
 for(var i = 0; i &lt; max_inventory; i++){
-    for(var k = 0; k &lt; 2; k++){
+    //for(var k = 0; k &lt; 2; k++){
         inventory_array[i,0] = -1;
         inventory_array[i,1] = 0;
-    }
+        inventory_array[i,2] = 0;
+       
+       
+    //}
+}
+for(var i = 0; i &lt; max_secondary_inventory; i++){
+    //for(var k = 0; k &lt; 2; k++){
+        secondary_inventory_array[i,0] = -1;
+        secondary_inventory_array[i,1] = 0;
+        secondary_inventory_array[i,2] = 0;
+       
+    //}
 }
 
 </string>
@@ -75,6 +91,7 @@ for(var i = 0; i &lt; max_inventory; i++){
             <kind>1</kind>
             <string>//movement
 scrControls();
+randomize();
 var horizontal_control =  RIGHT - LEFT ;
 var vertical_control =  DOWN - UP ;
 
@@ -161,38 +178,7 @@ y += vspd;
 view_yview = y - view_hview/2;
 view_xview = x - view_wview/2;
 //Inventory
-itemUnderPlayer = instance_place(x,y,oBaseItem);
-if(itemUnderPlayer != noone){
-    for(var i = 0; i &lt; max_inventory;i++){
-        if(inventory_array[i,0] = itemUnderPlayer.image_index){
-            inventory_array[i,1]++
-            with(itemUnderPlayer){instance_destroy();
-            }
-            break;
-        }
-        if(inventory_array[i,0] = -1){
-            inventory_array[i,0] = itemUnderPlayer.image_index;
-            inventory_array[i,1]++;
-            with(itemUnderPlayer){instance_destroy();
-            }
-            break;
-        }
-    }
-}
-if(MOUSEDOWN){
-    if(selected_slot = max_inventory-1){
-        selected_slot = 0;
-    }else{
-        selected_slot++
-    }
-}
-if(MOUSEUP){
-    if(selected_slot = 0){
-        selected_slot = max_inventory-1;
-    }else{
-        selected_slot--
-    }
-}
+
 
 //DEBUG CODE
 //this should be always last
@@ -206,6 +192,12 @@ if(DEBUG){
     if(keyboard_check_pressed(ord("M"))){
         rItem = instance_create(mouse_x,mouse_y,oBaseItem);
         rItem.image_index = choose(0,1,2,3);
+    }
+    if(keyboard_check_pressed(ord("N"))){
+        repeat(32){
+        rItem = instance_create(mouse_x+random_range(-32,32),mouse_y+random_range(-32,32),oBaseItem);
+        rItem.image_index = choose(0,1,2,3);
+        }
     }
 }
 
@@ -232,17 +224,149 @@ if(DEBUG){
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Item use code
+            <string>///Inventory
 //this code will be quite bulky whatever
+scrControls();
+if(INVENTORY){
+    if(inventory_opened == true)inventory_opened = false else inventory_opened = true;
+}
+
+if(inventory_opened == true and LPMOUSE){
+    var k = -1;
+    for(var i = 0; i &lt; max_secondary_inventory;i++){
+    if(i%8 == 0)k++
+        if(point_in_rectangle(mouse_x,mouse_y,32+view_xview+(k*16),80+((i - (8*k))*16)+view_yview,32+16+view_xview+(k*16),96+((i - (8*k))*16)+view_yview)){
+       
+            if(has_in_hand[0] = -1){
+                has_in_hand[0] = secondary_inventory_array[i,0];
+                has_in_hand[1] = secondary_inventory_array[i,1];
+                has_in_hand[2] = secondary_inventory_array[i,2];
+                secondary_inventory_array[i,0] = -1;
+                econdary_inventory_array[i,1] = 0;
+                secondary_inventory_array[i,2] = 0;
+            } else if(secondary_inventory_array[i,0] = -1){
+                secondary_inventory_array[i,0] = has_in_hand[0];
+                secondary_inventory_array[i,1] = has_in_hand[1];
+                secondary_inventory_array[i,2] = has_in_hand[2];
+                has_in_hand[0] = -1;
+                has_in_hand[1] = 0;
+                has_in_hand[2] = 0;
+            }else {
+            var temp0 = secondary_inventory_array[i,0];
+            secondary_inventory_array[i,0] = has_in_hand[0];
+            has_in_hand[0]=temp0
+            temp0 = secondary_inventory_array[i,1];
+            secondary_inventory_array[i,1] = has_in_hand[1];
+            has_in_hand[1]=temp0
+            temp0 = secondary_inventory_array[i,2];
+            secondary_inventory_array[i,2] = has_in_hand[2];
+            has_in_hand[2]=temp0
+            }
+       }
+    }
+    for(var i = 0; i &lt; max_inventory;i++){
+        if(point_in_rectangle(mouse_x,mouse_y,8+view_xview,80+(i*16)+view_yview,8+16+view_xview,96+(i*16)+view_yview)){
+       
+            if(has_in_hand[0] = -1){
+                has_in_hand[0] = inventory_array[i,0];
+                has_in_hand[1] = inventory_array[i,1];
+                has_in_hand[2] = inventory_array[i,2];
+                inventory_array[i,0] = -1;
+                inventory_array[i,1] = 0;
+                inventory_array[i,2] = 0;
+            } else if(inventory_array[i,0] = -1){
+                inventory_array[i,0] = has_in_hand[0];
+                inventory_array[i,1] = has_in_hand[1];
+                inventory_array[i,2] = has_in_hand[2];
+                has_in_hand[0] = -1;
+                has_in_hand[1] = 0;
+                has_in_hand[2] = 0;
+            }else {
+            var temp0 = inventory_array[i,0];
+            inventory_array[i,0] = has_in_hand[0];
+            has_in_hand[0]=temp0
+            temp0 = inventory_array[i,1];
+            inventory_array[i,1] = has_in_hand[1];
+            has_in_hand[1]=temp0
+            temp0 = inventory_array[i,2];
+            inventory_array[i,2] = has_in_hand[2];
+            has_in_hand[2]=temp0
+            }
+       }
+    }
+}
+
+
+itemUnderPlayer = instance_place(x,y,oBaseItem);
+if(itemUnderPlayer != noone){
+    for(var i = 0; i &lt; max_inventory;i++){
+        if(inventory_array[i,0] == itemUnderPlayer.image_index and inventory_array[i,1] &lt; inventory_array[i,2]){
+            inventory_array[i,1]++
+            with(itemUnderPlayer){instance_destroy();
+            }
+            itemUnderPlayer = noone;
+            break;
+        }
+        if(inventory_array[i,0] = -1){
+            inventory_array[i,0] = itemUnderPlayer.image_index;
+            inventory_array[i,1]++;
+            inventory_array[i,2] = itemUnderPlayer.max_stack;
+            
+            with(itemUnderPlayer){instance_destroy();
+            }
+            itemUnderPlayer = noone;
+            break;
+        }
+    }
+
+    if(itemUnderPlayer != noone){
+        for(var i = 0; i &lt; max_secondary_inventory;i++){
+            if((secondary_inventory_array[i,0] == itemUnderPlayer.image_index) and secondary_inventory_array[i,1] &lt; secondary_inventory_array[i,2]){
+                secondary_inventory_array[i,1]++
+                with(itemUnderPlayer){instance_destroy();
+                }
+                itemUnderPlayer = noone;
+                break;
+            }
+            if(secondary_inventory_array[i,0] = -1){
+                secondary_inventory_array[i,0] = itemUnderPlayer.image_index;
+                secondary_inventory_array[i,1]++;
+                secondary_inventory_array[i,2] = itemUnderPlayer.max_stack;
+                with(itemUnderPlayer){instance_destroy();
+                }
+                itemUnderPlayer = noone;
+                break;
+            }
+        }
+    }
+}
+//scrolling
+if(MOUSEDOWN){
+    if(selected_slot = max_inventory-1){
+        selected_slot = 0;
+    }else{
+        selected_slot++
+    }
+}
+if(MOUSEUP){
+    if(selected_slot = 0){
+        selected_slot = max_inventory-1;
+    }else{
+        selected_slot--
+    }
+}
+//^^^^^^inventory m e c h a n i c s
+
+//gamer time, code below makes the items actually do something
 if(RPMOUSE){
     switch(inventory_array[selected_slot,0]){
         case 0:
-        current_hydration += 25;
+        current_hydration += 20;
         inventory_array[selected_slot,1]--;
         if(inventory_array[selected_slot,1] == 0)inventory_array[selected_slot,0] = -1;
         break;
         case 1:
-        current_saturation += 25;
+        current_saturation += 20;
         inventory_array[selected_slot,1]--;
         if(inventory_array[selected_slot,1] == 0)inventory_array[selected_slot,0] = -1;
         break;
@@ -297,7 +421,35 @@ for(var i = 0; i &lt; max_inventory;i++){
         draw_text(32,176+(i*32),inventory_array[i,1]);
     }
 }
+
+if(inventory_opened == true){
+    var k = -1;
+    for(var i = 0; i &lt; max_secondary_inventory;i+=1){
+        if(i%8 == 0)k++
+        
+        draw_set_color(c_dkgray);
+        draw_rectangle(64+(k*32),160+((i - (8*k))*32 ),64+32+(k*32),192+((i - (8*k))*32),0);
+        if(secondary_inventory_array[i,0] != -1){
+            draw_set_color(c_white);
+            var xscaling = 32/16;
+            var yscaling = 32/16;
+            draw_sprite_ext(sItems,secondary_inventory_array[i,0],64+(k*32),160+((i - (8*k))*32),xscaling,yscaling,0,c_white,1);
+            draw_text(64+(k*32),176+((i - (8*k))*32),secondary_inventory_array[i,1]);
+          
+        }
+    }
+}
 draw_set_color(c_black);
+
+if(has_in_hand[0] != -1){
+    var xscaling = 1;
+    var yscaling = 1;
+    draw_sprite_ext(sItems,has_in_hand[0], (mouse_x - view_xview)*2,(mouse_y - view_yview)*2 ,xscaling,yscaling,0,c_white,1);
+
+
+}
+
+
 
 
 
@@ -311,10 +463,36 @@ draw_text(view_wport/2,64,current_health);
 draw_text(view_wport/2,96,current_stamina);
 draw_text(view_wport/2,128,current_saturation);
 draw_text(view_wport/2,160,current_hydration);
+draw_text(view_wport/2,192,mouse_x);
+draw_text(view_wport/2,224,mouse_y);
 }
 //
 //DEBUG CODE
 
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>draw_self();
 
 </string>
           </argument>
